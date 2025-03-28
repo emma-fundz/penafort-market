@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +21,17 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -28,7 +41,7 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-        <a href="/" className="flex items-center space-x-2 z-10">
+        <Link to="/" className="flex items-center space-x-2 z-10">
           <img
             src="/lovable-uploads/544cdfd4-727e-4912-8839-1159f7740524.png"
             alt="Penafort Supermarket"
@@ -37,25 +50,34 @@ const Navbar = () => {
           <span className="font-display font-bold text-xl md:text-2xl text-penafort-text-primary">
             Penafort
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#home" className="nav-link">
+          <Link 
+            to="/" 
+            className={`nav-link ${isActive('/') ? 'text-penafort-green after:w-full' : ''}`}
+          >
             Home
-          </a>
-          <a href="#products" className="nav-link">
+          </Link>
+          <Link 
+            to="/products" 
+            className={`nav-link ${isActive('/products') ? 'text-penafort-green after:w-full' : ''}`}
+          >
             Products
-          </a>
-          <a href="#about" className="nav-link">
+          </Link>
+          <Link 
+            to="/about" 
+            className={`nav-link ${isActive('/about') ? 'text-penafort-green after:w-full' : ''}`}
+          >
             About Us
-          </a>
-          <a href="#location" className="nav-link">
-            Location
-          </a>
-          <a href="#contact" className="nav-link">
+          </Link>
+          <Link 
+            to="/contact" 
+            className={`nav-link ${isActive('/contact') ? 'text-penafort-green after:w-full' : ''}`}
+          >
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Action Buttons */}
@@ -63,9 +85,9 @@ const Navbar = () => {
           <button className="p-2 rounded-full hover:bg-penafort-gray-100 transition-colors duration-300">
             <ShoppingCart size={24} className="text-penafort-text-primary" />
           </button>
-          <a href="#shop" className="btn-primary">
+          <Link to="/products" className="btn-primary">
             Shop Now
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -88,52 +110,39 @@ const Navbar = () => {
               : 'opacity-0 invisible pointer-events-none'
           }`}
         >
-          <a
-            href="#home"
-            className="nav-link text-xl"
-            onClick={() => setIsMobileMenuOpen(false)}
+          <Link
+            to="/"
+            className={`nav-link text-xl ${isActive('/') ? 'text-penafort-green' : ''}`}
           >
             Home
-          </a>
-          <a
-            href="#products"
-            className="nav-link text-xl"
-            onClick={() => setIsMobileMenuOpen(false)}
+          </Link>
+          <Link
+            to="/products"
+            className={`nav-link text-xl ${isActive('/products') ? 'text-penafort-green' : ''}`}
           >
             Products
-          </a>
-          <a
-            href="#about"
-            className="nav-link text-xl"
-            onClick={() => setIsMobileMenuOpen(false)}
+          </Link>
+          <Link
+            to="/about"
+            className={`nav-link text-xl ${isActive('/about') ? 'text-penafort-green' : ''}`}
           >
             About Us
-          </a>
-          <a
-            href="#location"
-            className="nav-link text-xl"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Location
-          </a>
-          <a
-            href="#contact"
-            className="nav-link text-xl"
-            onClick={() => setIsMobileMenuOpen(false)}
+          </Link>
+          <Link
+            to="/contact"
+            className={`nav-link text-xl ${isActive('/contact') ? 'text-penafort-green' : ''}`}
           >
             Contact
-          </a>
+          </Link>
           <div className="flex flex-col mt-8 space-y-4">
-            <a
-              href="#shop"
+            <Link
+              to="/products"
               className="btn-primary"
-              onClick={() => setIsMobileMenuOpen(false)}
             >
               Shop Now
-            </a>
+            </Link>
             <button
               className="flex items-center justify-center space-x-2"
-              onClick={() => setIsMobileMenuOpen(false)}
             >
               <ShoppingCart size={20} />
               <span>Cart</span>

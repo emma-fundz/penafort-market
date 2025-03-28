@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
@@ -8,7 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <div className="flex items-center space-x-2 mb-6">
+            <Link to="/" className="flex items-center space-x-2 mb-6">
               <img
                 src="/lovable-uploads/544cdfd4-727e-4912-8839-1159f7740524.png"
                 alt="Penafort Supermarket"
@@ -17,7 +18,7 @@ const Footer = () => {
               <span className="font-display font-bold text-xl text-penafort-text-primary">
                 Penafort
               </span>
-            </div>
+            </Link>
             <p className="text-penafort-text-secondary mb-6">
               Your trusted neighborhood supermarket offering fresh groceries, quality household items, and excellent customer service.
             </p>
@@ -38,34 +39,28 @@ const Footer = () => {
             <h3 className="font-display font-bold text-lg mb-6 text-penafort-text-primary">Quick Links</h3>
             <ul className="space-y-4">
               <li>
-                <a href="#home" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Products
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#about" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/about" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#location" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
-                  <ArrowRight size={14} className="mr-2" />
-                  Location
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/contact" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -74,34 +69,34 @@ const Footer = () => {
             <h3 className="font-display font-bold text-lg mb-6 text-penafort-text-primary">Categories</h3>
             <ul className="space-y-4">
               <li>
-                <a href="#fresh-produce" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Fresh Produce
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#dairy-eggs" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Dairy & Eggs
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#bakery" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Bakery
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#household" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Household
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#beverages" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
+                <Link to="/products" className="text-penafort-text-secondary hover:text-penafort-green transition-colors flex items-center">
                   <ArrowRight size={14} className="mr-2" />
                   Beverages
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
