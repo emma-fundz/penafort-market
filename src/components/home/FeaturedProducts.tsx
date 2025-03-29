@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ShoppingCart, Star } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Star, ShoppingBag, Truck, Shield } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 
 // Sample product data
