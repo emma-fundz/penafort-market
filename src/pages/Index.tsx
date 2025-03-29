@@ -7,18 +7,21 @@ import About from '../components/home/About';
 import Location from '../components/home/Location';
 import Newsletter from '../components/home/Newsletter';
 import Footer from '../components/layout/Footer';
+import PageTransition from '../components/layout/PageTransition';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      <Hero />
-      <FeaturedProducts />
-      <About />
-      <Location />
-      <Newsletter />
-      <Footer />
-    </div>
+    <PageTransition>
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <Hero />
+        <FeaturedProducts />
+        <About />
+        <Location />
+        <Newsletter />
+        <Footer />
+      </div>
+    </PageTransition>
   );
 };
 
