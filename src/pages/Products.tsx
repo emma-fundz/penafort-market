@@ -1,15 +1,18 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Filter, ArrowUpDown, X } from 'lucide-react';
+import { Filter, ArrowUpDown } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import PageTransition from '../components/layout/PageTransition';
 import { useToast } from '@/hooks/use-toast';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import ProductCard from '../components/products/ProductCard';
+import ProductDetailDrawer from '../components/products/ProductDetailDrawer';
+import ProductPagination from '../components/products/ProductPagination';
+import { productCategories, initialProducts, generateProducts } from '../utils/productDataGenerator';
 
 // Animation variants
 const containerVariants = {
@@ -22,224 +25,120 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100
-    }
-  }
-};
-
-// Mock product data - in a real app this would come from an API
-const allProducts = [
-  {
-    id: 1,
-    name: 'Fresh Organic Tomatoes',
-    category: 'Vegetables',
-    price: 2.99,
-    image: 'https://images.unsplash.com/photo-1546750670-725a588310bc?q=80&w=1000&auto=format&fit=crop',
-    description: 'Locally grown organic tomatoes perfect for salads and cooking.'
-  },
-  {
-    id: 2,
-    name: 'Whole Grain Bread',
-    category: 'Bakery',
-    price: 3.49,
-    image: 'https://images.unsplash.com/photo-1598373182133-52452f7691ef?q=80&w=1000&auto=format&fit=crop',
-    description: 'Freshly baked whole grain bread made with organic flour.'
-  },
-  {
-    id: 3,
-    name: 'Farm Fresh Eggs',
-    category: 'Dairy & Eggs',
-    price: 4.99,
-    image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=1000&auto=format&fit=crop',
-    description: 'Free-range eggs from local farms, rich in nutrients.'
-  },
-  {
-    id: 4, 
-    name: 'Premium Olive Oil',
-    category: 'Pantry',
-    price: 12.99,
-    image: 'https://images.unsplash.com/photo-1619021897626-dd7cdb333ba3?q=80&w=1000&auto=format&fit=crop',
-    description: 'Extra virgin olive oil imported from Mediterranean olive groves.'
-  },
-  {
-    id: 5,
-    name: 'Organic Bananas',
-    category: 'Fruits',
-    price: 1.99,
-    image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?q=80&w=1000&auto=format&fit=crop',
-    description: 'Sweet and ripe organic bananas harvested at peak freshness.'
-  },
-  {
-    id: 6,
-    name: 'Fresh Orange Juice',
-    category: 'Beverages',
-    price: 4.49,
-    image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=1000&auto=format&fit=crop',
-    description: 'Freshly squeezed orange juice with no added sugars or preservatives.'
-  },
-  {
-    id: 7,
-    name: 'Sourdough Bread',
-    category: 'Bakery',
-    price: 5.99,
-    image: 'https://images.unsplash.com/photo-1585478259715-7c86af5e6f65?q=80&w=1000&auto=format&fit=crop',
-    description: 'Traditional sourdough bread made with a century-old starter.'
-  },
-  {
-    id: 8,
-    name: 'Fresh Strawberries',
-    category: 'Fruits',
-    price: 3.99,
-    image: 'https://images.unsplash.com/photo-1518635017498-87f514b751ba?q=80&w=1000&auto=format&fit=crop',
-    description: 'Sweet and juicy strawberries picked at the perfect ripeness.'
-  },
-];
-
-type ProductDetailDrawerProps = {
-  product: any;
-  isOpen: boolean;
-  onClose: () => void;
-};
-
-const ProductDetailDrawer = ({ product, isOpen, onClose }: ProductDetailDrawerProps) => {
-  const { toast } = useToast();
-  
-  const handleAddToCart = () => {
-    toast({
-      title: "Added to cart!",
-      description: `${product.name} has been added to your cart`,
-      duration: 3000,
-    });
-    onClose();
-  };
-  
-  if (!isOpen) return null;
-  
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-end md:items-center">
-      <motion.div 
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="bg-white w-full max-w-2xl rounded-t-2xl md:rounded-2xl max-h-[90vh] overflow-y-auto"
-      >
-        <div className="relative">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-colors z-10"
-          >
-            <X size={20} />
-          </button>
-          
-          <div className="h-64 md:h-80 overflow-hidden">
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-penafort-text-primary">{product.name}</h2>
-                <p className="text-penafort-text-secondary text-sm">{product.category}</p>
-              </div>
-              <span className="text-2xl font-bold text-penafort-green">${product.price.toFixed(2)}</span>
-            </div>
-            
-            <p className="text-penafort-text-secondary mb-6">{product.description}</p>
-            
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center">
-                <button className="w-10 h-10 rounded-l-lg border border-penafort-gray-200 flex items-center justify-center hover:bg-penafort-gray-100">-</button>
-                <span className="w-12 h-10 flex items-center justify-center border-t border-b border-penafort-gray-200">1</span>
-                <button className="w-10 h-10 rounded-r-lg border border-penafort-gray-200 flex items-center justify-center hover:bg-penafort-gray-100">+</button>
-              </div>
-              
-              <button 
-                className="flex-1 btn-primary flex items-center justify-center gap-2"
-                onClick={handleAddToCart}
-              >
-                <ShoppingBag size={18} />
-                <span>Add to Cart</span>
-              </button>
-            </div>
-            
-            <div className="border-t border-penafort-gray-200 pt-6">
-              <h3 className="font-medium mb-4">You might also like</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {allProducts.slice(0, 3).map(relatedProduct => (
-                  <div key={relatedProduct.id} className="text-center">
-                    <div className="aspect-square rounded-lg overflow-hidden mb-2">
-                      <img 
-                        src={relatedProduct.image} 
-                        alt={relatedProduct.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <p className="text-xs truncate">{relatedProduct.name}</p>
-                    <p className="text-xs font-medium text-penafort-green">${relatedProduct.price.toFixed(2)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
+const PRODUCTS_PER_PAGE = 12;
 
 const Products = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [products, setProducts] = useState(allProducts);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  // Get route parameters and search parameters
   const { category } = useParams<{ category: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const categories = ['All', 'Fruits', 'Vegetables', 'Bakery', 'Dairy & Eggs', 'Pantry', 'Beverages'];
+  // Get page from URL or default to 1
+  const pageFromUrl = parseInt(searchParams.get('page') || '1');
+  
+  // State management
+  const [allProducts, setAllProducts] = useState<any[]>(initialProducts);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState<number>(pageFromUrl);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [sortOption, setSortOption] = useState<string>('default');
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // Generate more products when needed (simulating API call)
+  const loadMoreProducts = () => {
+    setIsLoading(true);
+    // Simulate API delay
+    setTimeout(() => {
+      const moreProducts = generateProducts(500);
+      setAllProducts(prev => [...prev, ...moreProducts]);
+      setIsLoading(false);
+    }, 500);
+  };
+
+  // Load initial data
   useEffect(() => {
-    // If category is in URL, set it as selected
-    if (category && categories.includes(category)) {
+    // This would be an API call in a real application
+    if (allProducts.length < 1000) {
+      loadMoreProducts();
+    }
+  }, []);
+
+  // Update category from URL parameter
+  useEffect(() => {
+    if (category) {
       setSelectedCategory(category);
+    } else {
+      setSelectedCategory('All');
     }
   }, [category]);
 
+  // Update URL when page changes
   useEffect(() => {
-    // Filter products when category changes
-    if (selectedCategory === 'All') {
-      setProducts(allProducts);
-    } else {
-      setProducts(allProducts.filter(product => product.category === selectedCategory));
-    }
-  }, [selectedCategory]);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', currentPage.toString());
+    setSearchParams(newParams);
+  }, [currentPage]);
 
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    // Update URL with category
-    if (category === 'All') {
+  // Filter products based on selected category and price range
+  const filteredProducts = useMemo(() => {
+    return allProducts.filter(product => {
+      const categoryMatch = selectedCategory === 'All' || product.category === selectedCategory;
+      const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
+      return categoryMatch && priceMatch;
+    });
+  }, [allProducts, selectedCategory, priceRange]);
+
+  // Sort products based on selected sort option
+  const sortedProducts = useMemo(() => {
+    switch (sortOption) {
+      case 'price-asc':
+        return [...filteredProducts].sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return [...filteredProducts].sort((a, b) => b.price - a.price);
+      case 'name-asc':
+        return [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name));
+      case 'name-desc':
+        return [...filteredProducts].sort((a, b) => b.name.localeCompare(a.name));
+      default:
+        return filteredProducts;
+    }
+  }, [filteredProducts, sortOption]);
+
+  // Paginate products
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return sortedProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+  }, [sortedProducts, currentPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(sortedProducts.length / PRODUCTS_PER_PAGE);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle category selection
+  const handleCategoryClick = (categoryName: string) => {
+    setCurrentPage(1); // Reset to first page when changing category
+    if (categoryName === 'All') {
       navigate('/products');
     } else {
-      navigate(`/products/category/${category}`);
+      navigate(`/products/category/${categoryName}`);
     }
   };
 
+  // Handle product click
   const handleProductClick = (product: any) => {
     setSelectedProduct(product);
     setIsDrawerOpen(true);
   };
 
+  // Handle add to cart
   const handleAddToCart = (product: any, event: React.MouseEvent) => {
     event.stopPropagation();
     
@@ -249,6 +148,14 @@ const Products = () => {
       duration: 3000,
     });
   };
+
+  // Find related products (same category)
+  const relatedProducts = useMemo(() => {
+    if (!selectedProduct) return [];
+    return allProducts
+      .filter(p => p.category === selectedProduct.category && p.id !== selectedProduct.id)
+      .slice(0, 6);
+  }, [selectedProduct, allProducts]);
 
   return (
     <PageTransition>
@@ -285,19 +192,19 @@ const Products = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
+                {['All', ...productCategories].map((categoryName) => (
                   <motion.button
-                    key={category}
+                    key={categoryName}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-                      selectedCategory === category 
+                      selectedCategory === categoryName 
                         ? 'border-penafort-green bg-penafort-green/10 text-penafort-green' 
                         : 'border-penafort-gray-200 hover:border-penafort-green hover:bg-penafort-green/5'
                     }`}
-                    onClick={() => handleCategoryClick(category)}
+                    onClick={() => handleCategoryClick(categoryName)}
                   >
-                    {category}
+                    {categoryName}
                   </motion.button>
                 ))}
               </div>
@@ -313,17 +220,35 @@ const Products = () => {
                     <div className="space-y-4">
                       <h4 className="font-medium">Filter Options</h4>
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Filter by price, rating, or other criteria</p>
+                        <p className="text-sm text-muted-foreground">Filter by price range</p>
                         <div className="grid gap-2">
                           <label className="text-xs">Price Range</label>
                           <div className="flex items-center gap-2">
-                            <input type="text" placeholder="Min" className="input-field w-1/2 py-1 text-sm" />
+                            <input 
+                              type="number" 
+                              value={priceRange[0]} 
+                              onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                              className="input-field w-1/2 py-1 text-sm" 
+                              min="0"
+                            />
                             <span>-</span>
-                            <input type="text" placeholder="Max" className="input-field w-1/2 py-1 text-sm" />
+                            <input 
+                              type="number" 
+                              value={priceRange[1]} 
+                              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 0])}
+                              className="input-field w-1/2 py-1 text-sm" 
+                              min="0"
+                            />
                           </div>
                         </div>
                       </div>
-                      <Button size="sm" className="w-full">Apply Filters</Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full" 
+                        onClick={() => setCurrentPage(1)} // Reset to first page when filtering
+                      >
+                        Apply Filters
+                      </Button>
                     </div>
                   </HoverCardContent>
                 </HoverCard>
@@ -341,10 +266,30 @@ const Products = () => {
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Sort products by different criteria</p>
                         <div className="grid gap-2">
-                          <button className="text-left p-2 hover:bg-penafort-green/5 rounded-md">Price: Low to High</button>
-                          <button className="text-left p-2 hover:bg-penafort-green/5 rounded-md">Price: High to Low</button>
-                          <button className="text-left p-2 hover:bg-penafort-green/5 rounded-md">Newest First</button>
-                          <button className="text-left p-2 hover:bg-penafort-green/5 rounded-md">Popularity</button>
+                          <button 
+                            className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'price-asc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
+                            onClick={() => setSortOption('price-asc')}
+                          >
+                            Price: Low to High
+                          </button>
+                          <button 
+                            className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'price-desc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
+                            onClick={() => setSortOption('price-desc')}
+                          >
+                            Price: High to Low
+                          </button>
+                          <button 
+                            className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'name-asc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
+                            onClick={() => setSortOption('name-asc')}
+                          >
+                            Name: A to Z
+                          </button>
+                          <button 
+                            className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'name-desc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
+                            onClick={() => setSortOption('name-desc')}
+                          >
+                            Name: Z to A
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -353,59 +298,67 @@ const Products = () => {
               </div>
             </motion.div>
 
+            {/* Products Count & Current Page */}
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-penafort-text-secondary">
+                Showing {paginatedProducts.length} of {sortedProducts.length} products
+              </p>
+              <p className="text-penafort-text-secondary">
+                Page {currentPage} of {totalPages}
+              </p>
+            </div>
+
+            {/* Loading Indicator */}
+            {isLoading && (
+              <div className="flex justify-center my-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-penafort-green"></div>
+              </div>
+            )}
+
             {/* Products Grid */}
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {products.map((product) => (
-                <motion.div 
-                  key={product.id} 
-                  className="product-card group cursor-pointer"
-                  variants={itemVariants}
-                  whileHover={{ y: -5 }}
-                  onClick={() => handleProductClick(product)}
-                >
-                  <div className="mb-4 aspect-square rounded-lg overflow-hidden bg-penafort-gray-100">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-medium text-penafort-text-primary mb-1">{product.name}</h3>
-                      <p className="text-penafort-text-secondary text-sm">{product.category}</p>
-                    </div>
-                    <p className="font-bold text-penafort-green">${product.price.toFixed(2)}</p>
-                  </div>
-                  <motion.button 
-                    className="w-full flex items-center justify-center gap-2 btn-primary mt-3"
-                    whileTap={{ scale: 0.95 }}
-                    onClick={(e) => handleAddToCart(product, e)}
-                  >
-                    <ShoppingBag size={18} />
-                    <span>Add to Cart</span>
-                  </motion.button>
-                </motion.div>
-              ))}
-            </motion.div>
+            {paginatedProducts.length > 0 ? (
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {paginatedProducts.map((product) => (
+                  <ProductCard 
+                    key={product.id}
+                    product={product}
+                    onClick={() => handleProductClick(product)}
+                    onAddToCart={(e) => handleAddToCart(product, e)}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-medium mb-2">No products found</h3>
+                <p className="text-penafort-text-secondary">
+                  Try adjusting your filters or search criteria
+                </p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            <ProductPagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </main>
 
         <Footer />
         
         {/* Product Detail Drawer */}
-        {selectedProduct && (
-          <ProductDetailDrawer 
-            product={selectedProduct} 
-            isOpen={isDrawerOpen} 
-            onClose={() => setIsDrawerOpen(false)}
-          />
-        )}
+        <ProductDetailDrawer 
+          product={selectedProduct} 
+          isOpen={isDrawerOpen} 
+          onClose={() => setIsDrawerOpen(false)}
+          relatedProducts={relatedProducts}
+        />
       </div>
     </PageTransition>
   );
