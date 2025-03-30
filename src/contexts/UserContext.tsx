@@ -1,15 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
+import { supabase, signIn, signUp, signOut, getCurrentUser } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 // Define types
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-};
-
 type UserContextType = {
   user: User | null;
   loading: boolean;
@@ -29,57 +24,74 @@ export const UserProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   // Check for existing user session on initial load
   useEffect(() => {
-    const storedUser = localStorage.getItem('penafort_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const getInitialSession = async () => {
+      try {
+        const { user, error } = await getCurrentUser();
+        
+        if (error) {
+          console.error('Error getting current user:', error);
+        }
+        
+        setUser(user || null);
+      } catch (error) {
+        console.error('Error during authentication check:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+        setLoading(false);
+      }
+    );
+
+    getInitialSession();
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Login function
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data, error } = await signIn(email, password);
       
-      // For demo purposes, accept any email with password "password"
-      if (password !== "password") {
+      if (error) {
         toast({
-          title: "Invalid credentials",
-          description: "Please check your email and password",
+          title: "Login failed",
+          description: error.message,
           variant: "destructive"
         });
         setLoading(false);
         return false;
       }
       
-      // Create a mock user
-      const newUser: User = {
-        id: Math.random().toString(36).substring(2),
-        email,
-        name: email.split('@')[0],
-      };
+      if (data.user) {
+        setUser(data.user);
+        toast({
+          title: "Welcome back!",
+          description: "You've successfully logged in",
+        });
+        return true;
+      }
       
-      // Save user to state and localStorage
-      setUser(newUser);
-      localStorage.setItem('penafort_user', JSON.stringify(newUser));
-      
-      toast({
-        title: "Welcome back!",
-        description: "You've successfully logged in",
-      });
-      
-      setLoading(false);
-      return true;
+      return false;
     } catch (error) {
+      console.error('Unexpected error during login:', error);
       toast({
         title: "Login failed",
         description: "An unexpected error occurred",
         variant: "destructive"
       });
-      setLoading(false);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,46 +99,69 @@ export const UserProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const signup = async (name: string, email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data, error } = await signUp(email, password, { full_name: name });
       
-      // Create a new user
-      const newUser: User = {
-        id: Math.random().toString(36).substring(2),
-        email,
-        name,
-      };
+      if (error) {
+        toast({
+          title: "Signup failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        setLoading(false);
+        return false;
+      }
       
-      // Save user to state and localStorage
-      setUser(newUser);
-      localStorage.setItem('penafort_user', JSON.stringify(newUser));
+      if (data.user) {
+        setUser(data.user);
+        toast({
+          title: "Account created!",
+          description: "Your account has been successfully created",
+        });
+        return true;
+      }
       
-      toast({
-        title: "Account created!",
-        description: "Your account has been successfully created",
-      });
-      
-      setLoading(false);
-      return true;
+      return false;
     } catch (error) {
+      console.error('Unexpected error during signup:', error);
       toast({
         title: "Signup failed",
         description: "An unexpected error occurred",
         variant: "destructive"
       });
-      setLoading(false);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   // Logout function
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('penafort_user');
-    toast({
-      title: "Logged out",
-      description: "You've been successfully logged out",
-    });
+  const logout = async () => {
+    try {
+      const { error } = await signOut();
+      
+      if (error) {
+        console.error('Error during sign out:', error);
+        toast({
+          title: "Logout failed",
+          description: "An error occurred while logging out",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setUser(null);
+      toast({
+        title: "Logged out",
+        description: "You've been successfully logged out",
+      });
+    } catch (error) {
+      console.error('Unexpected error during logout:', error);
+      toast({
+        title: "Logout failed",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    }
   };
 
   const value = {
