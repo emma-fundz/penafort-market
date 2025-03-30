@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 import Navbar from '@/components/layout/Navbar';
-import { PageTransition } from '@/components/layout/PageTransition';
+import PageTransition from '@/components/layout/PageTransition';
 import Footer from '@/components/layout/Footer';
 
 const formSchema = z.object({
