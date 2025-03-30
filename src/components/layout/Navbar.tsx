@@ -1,11 +1,18 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, UserCircle, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../contexts/CartContext';
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { useUser } from '../../contexts/UserContext';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const CartDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
@@ -134,6 +141,7 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
   const { cartCount } = useCart();
+  const { user, logout, isAuthenticated } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,7 +156,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
@@ -157,6 +164,39 @@ const Navbar = () => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
+  };
+
+  const mobileMenuVariants = {
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.2,
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        when: "afterChildren",
+      }
+    },
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+        when: "beforeChildren",
+      }
+    }
+  };
+
+  const itemVariants = {
+    closed: { opacity: 0, y: -10 },
+    open: { opacity: 1, y: 0 }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -179,7 +219,6 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link 
             to="/" 
@@ -207,7 +246,6 @@ const Navbar = () => {
           </Link>
         </nav>
 
-        {/* Action Buttons */}
         <div className="hidden md:flex items-center space-x-3">
           <button 
             className="p-2 rounded-full hover:bg-penafort-gray-100 transition-colors duration-300 relative"
@@ -224,12 +262,40 @@ const Navbar = () => {
               </motion.span>
             )}
           </button>
-          <Link to="/products" className="btn-primary">
-            Shop Now
-          </Link>
+          
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <UserCircle className="h-6 w-6 text-penafort-text-primary" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link to="/profile" className="w-full flex">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/orders" className="w-full flex">Orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/settings" className="w-full flex">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="text-red-500">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/login" className="btn-primary">
+              Sign In
+            </Link>
+          )}
         </div>
 
-        {/* Mobile Menu Button */}
         <div className="flex items-center space-x-2 md:hidden z-10">
           <button 
             className="p-2 rounded-full hover:bg-penafort-gray-100 transition-colors duration-300 relative"
@@ -250,6 +316,7 @@ const Navbar = () => {
           <button
             className="p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
           >
             {isMobileMenuOpen ? (
               <X size={24} className="text-penafort-text-primary" />
@@ -259,54 +326,97 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-white flex flex-col justify-center items-center space-y-8 z-40 md:hidden"
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={mobileMenuVariants}
+              className="fixed inset-0 bg-white flex flex-col justify-center items-center space-y-8 z-40 md:hidden pt-20"
             >
-              <Link
-                to="/"
-                className={`nav-link text-xl ${isActive('/') ? 'text-penafort-green' : ''}`}
-              >
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className={`nav-link text-xl ${isActive('/products') ? 'text-penafort-green' : ''}`}
-              >
-                Products
-              </Link>
-              <Link
-                to="/about"
-                className={`nav-link text-xl ${isActive('/about') ? 'text-penafort-green' : ''}`}
-              >
-                About Us
-              </Link>
-              <Link
-                to="/contact"
-                className={`nav-link text-xl ${isActive('/contact') ? 'text-penafort-green' : ''}`}
-              >
-                Contact
-              </Link>
-              <div className="flex flex-col mt-8 space-y-4">
+              <motion.div variants={itemVariants}>
+                <Link
+                  to="/"
+                  className={`nav-link text-xl ${isActive('/') ? 'text-penafort-green' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </Link>
+              </motion.div>
+              <motion.div variants={itemVariants}>
                 <Link
                   to="/products"
-                  className="btn-primary"
+                  className={`nav-link text-xl ${isActive('/products') ? 'text-penafort-green' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Shop Now
+                  Products
                 </Link>
-              </div>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <Link
+                  to="/about"
+                  className={`nav-link text-xl ${isActive('/about') ? 'text-penafort-green' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About Us
+                </Link>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <Link
+                  to="/contact"
+                  className={`nav-link text-xl ${isActive('/contact') ? 'text-penafort-green' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </motion.div>
+              <motion.div variants={itemVariants} className="mt-8">
+                {isAuthenticated ? (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="text-center mb-2">
+                      <p className="text-xl font-medium">{user?.name}</p>
+                      <p className="text-penafort-text-secondary text-sm">{user?.email}</p>
+                    </div>
+                    <Link
+                      to="/profile"
+                      className="btn-secondary w-full"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="text-red-500 font-medium flex items-center"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-4">
+                    <Link
+                      to="/login"
+                      className="btn-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="btn-secondary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
       
-      {/* Cart Drawer */}
       <AnimatePresence>
         {isCartOpen && <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
       </AnimatePresence>
