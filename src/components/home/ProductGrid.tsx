@@ -1,7 +1,9 @@
 
 import React from 'react';
-import { ArrowRight, ShoppingCart } from 'lucide-react';
+import { ArrowRight, ShoppingCart, ShoppingBag } from 'lucide-react';
 import RatingStars from '../common/RatingStars';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
@@ -18,6 +20,31 @@ interface ProductGridProps {
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (product: Product, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Convert price string (like "₦3,500") to number
+    const numericPrice = parseFloat(product.price.replace(/[^\d.]/g, ''));
+    
+    // Create a modified product with numeric price for the cart
+    const cartProduct = {
+      ...product,
+      price: numericPrice,
+    };
+    
+    addToCart(cartProduct);
+    
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart`,
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="mb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
@@ -53,7 +80,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button className="btn-primary">
+                <button 
+                  className="btn-primary"
+                  onClick={(e) => handleAddToCart(product, e)}
+                >
                   <ShoppingCart size={16} className="mr-2" />
                   Add to Cart
                 </button>
@@ -63,8 +93,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
             <RatingStars rating={product.rating} />
             <div className="flex justify-between items-center mt-2">
               <span className="font-bold text-penafort-green">{product.price}</span>
-              <button className="p-2 bg-penafort-green/10 text-penafort-green rounded-full transition-all duration-300 hover:bg-penafort-green hover:text-white">
-                <ArrowRight size={16} />
+              <button 
+                className="p-2 bg-penafort-green/10 text-penafort-green rounded-full transition-all duration-300 hover:bg-penafort-green hover:text-white"
+                onClick={(e) => handleAddToCart(product, e)}
+              >
+                <ShoppingBag size={16} />
               </button>
             </div>
           </div>
