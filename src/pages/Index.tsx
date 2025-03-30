@@ -9,7 +9,8 @@ import Location from '../components/home/Location';
 import Newsletter from '../components/home/Newsletter';
 import Footer from '../components/layout/Footer';
 import PageTransition from '../components/layout/PageTransition';
-import { useToast } from "@/hooks/use-toast";
+// Import toast from the components/ui/use-toast re-export to ensure consistent usage
+import { useToast } from "@/components/ui/use-toast";
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -35,6 +36,7 @@ const itemVariants = {
 };
 
 const Index = () => {
+  // Use the toast hook from the components/ui re-export
   const { toast } = useToast();
   
   return (
