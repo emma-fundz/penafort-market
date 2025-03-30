@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ShoppingCart, UserCircle, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../contexts/CartContext';
 import { useUser } from '../../contexts/UserContext';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,11 +146,12 @@ const CartDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartCount } = useCart();
   const { user, logout, isAuthenticated } = useUser();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -156,47 +166,15 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
 
-  const mobileMenuVariants = {
-    closed: {
-      opacity: 0,
-      y: -20,
-      transition: {
-        duration: 0.2,
-        staggerChildren: 0.05,
-        staggerDirection: -1,
-        when: "afterChildren",
-      }
-    },
-    open: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.3,
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-        when: "beforeChildren",
-      }
-    }
-  };
-
-  const itemVariants = {
-    closed: { opacity: 0, y: -10 },
-    open: { opacity: 1, y: 0 }
-  };
-
   const handleLogout = () => {
     logout();
-    setIsMobileMenuOpen(false);
+    navigate('/');
   };
 
   return (
@@ -270,7 +248,7 @@ const Navbar = () => {
                   <UserCircle className="h-6 w-6 text-penafort-text-primary" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 bg-white">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -283,7 +261,7 @@ const Navbar = () => {
                   <Link to="/settings" className="w-full flex">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="text-red-500">
+                <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -313,108 +291,105 @@ const Navbar = () => {
             )}
           </button>
           
-          <button
-            className="p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle mobile menu"
-          >
-            {isMobileMenuOpen ? (
-              <X size={24} className="text-penafort-text-primary" />
-            ) : (
-              <Menu size={24} className="text-penafort-text-primary" />
-            )}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={mobileMenuVariants}
-              className="fixed inset-0 bg-white flex flex-col justify-center items-center space-y-8 z-40 md:hidden pt-20"
-            >
-              <motion.div variants={itemVariants}>
-                <Link
-                  to="/"
-                  className={`nav-link text-xl ${isActive('/') ? 'text-penafort-green' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Home
-                </Link>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <Link
-                  to="/products"
-                  className={`nav-link text-xl ${isActive('/products') ? 'text-penafort-green' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Products
-                </Link>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <Link
-                  to="/about"
-                  className={`nav-link text-xl ${isActive('/about') ? 'text-penafort-green' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  About Us
-                </Link>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <Link
-                  to="/contact"
-                  className={`nav-link text-xl ${isActive('/contact') ? 'text-penafort-green' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Contact
-                </Link>
-              </motion.div>
-              <motion.div variants={itemVariants} className="mt-8">
-                {isAuthenticated ? (
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="text-center mb-2">
-                      <p className="text-xl font-medium">{user?.name}</p>
-                      <p className="text-penafort-text-secondary text-sm">{user?.email}</p>
+          <Sheet>
+            <SheetTrigger asChild>
+              <button
+                className="p-2"
+                aria-label="Toggle mobile menu"
+              >
+                <Menu size={24} className="text-penafort-text-primary" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0 w-4/5 sm:max-w-sm">
+              <SheetHeader className="p-6 border-b">
+                <SheetTitle className="text-xl font-display font-bold">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/lovable-uploads/544cdfd4-727e-4912-8839-1159f7740524.png"
+                      alt="Penafort Supermarket"
+                      className="h-8 w-auto"
+                    />
+                    Penafort
+                  </div>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col h-full">
+                <div className="py-6 px-4 flex flex-col space-y-6">
+                  <SheetClose asChild>
+                    <Link
+                      to="/"
+                      className={`nav-link-mobile text-xl ${isActive('/') ? 'text-penafort-green' : ''}`}
+                    >
+                      Home
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      to="/products"
+                      className={`nav-link-mobile text-xl ${isActive('/products') ? 'text-penafort-green' : ''}`}
+                    >
+                      Products
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      to="/about"
+                      className={`nav-link-mobile text-xl ${isActive('/about') ? 'text-penafort-green' : ''}`}
+                    >
+                      About Us
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      to="/contact"
+                      className={`nav-link-mobile text-xl ${isActive('/contact') ? 'text-penafort-green' : ''}`}
+                    >
+                      Contact
+                    </Link>
+                  </SheetClose>
+                </div>
+                
+                <div className="mt-auto p-6 border-t">
+                  {isAuthenticated ? (
+                    <div className="flex flex-col space-y-4">
+                      <div className="text-center mb-2">
+                        <p className="text-xl font-medium">{user?.name}</p>
+                        <p className="text-penafort-text-secondary text-sm">{user?.email}</p>
+                      </div>
+                      <SheetClose asChild>
+                        <Link to="/profile" className="btn-secondary w-full">
+                          My Profile
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <button
+                          onClick={handleLogout}
+                          className="text-red-500 font-medium flex items-center justify-center w-full"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Logout
+                        </button>
+                      </SheetClose>
                     </div>
-                    <Link
-                      to="/profile"
-                      className="btn-secondary w-full"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      My Profile
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="text-red-500 font-medium flex items-center"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col space-y-4">
-                    <Link
-                      to="/login"
-                      className="btn-primary"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      to="/signup"
-                      className="btn-secondary"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Create Account
-                    </Link>
-                  </div>
-                )}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  ) : (
+                    <div className="flex flex-col space-y-4">
+                      <SheetClose asChild>
+                        <Link to="/login" className="btn-primary w-full">
+                          Sign In
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link to="/signup" className="btn-secondary w-full">
+                          Create Account
+                        </Link>
+                      </SheetClose>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
       
       <AnimatePresence>
