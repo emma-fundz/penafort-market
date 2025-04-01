@@ -177,6 +177,8 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const userFullName = user?.user_metadata?.full_name || user?.email || 'User';
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -353,7 +355,7 @@ const Navbar = () => {
                   {isAuthenticated ? (
                     <div className="flex flex-col space-y-4">
                       <div className="text-center mb-2">
-                        <p className="text-xl font-medium">{user?.name}</p>
+                        <p className="text-xl font-medium">{userFullName}</p>
                         <p className="text-penafort-text-secondary text-sm">{user?.email}</p>
                       </div>
                       <SheetClose asChild>

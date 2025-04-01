@@ -2,10 +2,10 @@
 import React from 'react';
 
 interface LoadingIndicatorProps {
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ isLoading }) => {
+const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ isLoading = true }) => {
   if (!isLoading) return null;
   
   return (

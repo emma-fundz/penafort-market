@@ -16,6 +16,10 @@ const Profile = () => {
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
 
+  // Get the user's full name from the user metadata if available
+  const userFullName = user?.user_metadata?.full_name || user?.email || 'User';
+  const userEmail = user?.email || '';
+
   // Redirect to login if not authenticated
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -45,8 +49,8 @@ const Profile = () => {
                     <div className="w-24 h-24 mx-auto bg-penafort-gray-100 rounded-full flex items-center justify-center">
                       <UserCircle size={64} className="text-penafort-gray-400" />
                     </div>
-                    <h2 className="mt-4 text-xl font-bold">{user?.name}</h2>
-                    <p className="text-penafort-text-secondary">{user?.email}</p>
+                    <h2 className="mt-4 text-xl font-bold">{userFullName}</h2>
+                    <p className="text-penafort-text-secondary">{userEmail}</p>
                   </div>
                   
                   <Separator className="my-4" />
@@ -109,11 +113,11 @@ const Profile = () => {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-penafort-text-secondary mb-1">Full Name</label>
-                          <div className="p-3 border rounded-md bg-penafort-gray-50">{user?.name}</div>
+                          <div className="p-3 border rounded-md bg-penafort-gray-50">{userFullName}</div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-penafort-text-secondary mb-1">Email</label>
-                          <div className="p-3 border rounded-md bg-penafort-gray-50">{user?.email}</div>
+                          <div className="p-3 border rounded-md bg-penafort-gray-50">{userEmail}</div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-penafort-text-secondary mb-1">Phone Number</label>
