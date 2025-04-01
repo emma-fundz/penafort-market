@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -5,7 +6,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2, Phone, Google, Check } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Phone, Mail, Check } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -164,7 +165,7 @@ const Signup = () => {
                   className="w-full h-12 flex items-center justify-center gap-2"
                   onClick={handleGoogleLogin}
                 >
-                  <Google size={20} />
+                  <Mail size={20} />
                   <span>Continue with Google</span>
                 </Button>
               </div>

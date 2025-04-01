@@ -6,7 +6,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2, Google } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -95,7 +95,7 @@ const Login = () => {
                   className="w-full h-12 flex items-center justify-center gap-2"
                   onClick={handleGoogleLogin}
                 >
-                  <Google size={20} />
+                  <Mail size={20} />
                   <span>Continue with Google</span>
                 </Button>
               </div>
