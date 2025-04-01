@@ -14,6 +14,8 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import AuthRoute from "./components/auth/AuthRoute";
+import OAuthCallback from "./components/auth/OAuthCallback";
+import { UserProvider } from "./contexts/UserContext";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,7 @@ const AnimatedRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route path="/profile" element={
           <AuthRoute>
             <Profile />
@@ -46,11 +49,13 @@ const AnimatedRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <BrowserRouter>
-        <AnimatedRoutes />
-      </BrowserRouter>
-      <Toaster />
-      <Sonner />
+      <UserProvider>
+        <BrowserRouter>
+          <AnimatedRoutes />
+        </BrowserRouter>
+        <Toaster />
+        <Sonner />
+      </UserProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

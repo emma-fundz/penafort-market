@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserCircle, Package, Settings, CreditCard } from 'lucide-react';
+import { UserCircle, Package, Settings, CreditCard, Phone, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
 
@@ -11,6 +11,16 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AddressList from '@/components/profile/AddressList';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import PhoneVerification from '@/components/auth/PhoneVerification';
 
 const Profile = () => {
   const { user, isAuthenticated, logout } = useUser();
@@ -19,6 +29,7 @@ const Profile = () => {
   // Get the user's full name from the user metadata if available
   const userFullName = user?.user_metadata?.full_name || user?.email || 'User';
   const userEmail = user?.email || '';
+  const userPhone = user?.user_metadata?.phone || '';
 
   // Redirect to login if not authenticated
   React.useEffect(() => {
@@ -105,7 +116,7 @@ const Profile = () => {
                   <Tabs defaultValue="personal">
                     <TabsList>
                       <TabsTrigger value="personal">Personal Information</TabsTrigger>
-                      <TabsTrigger value="address">Address</TabsTrigger>
+                      <TabsTrigger value="address">Addresses</TabsTrigger>
                       <TabsTrigger value="preferences">Preferences</TabsTrigger>
                     </TabsList>
                     
@@ -121,7 +132,28 @@ const Profile = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-penafort-text-secondary mb-1">Phone Number</label>
-                          <div className="p-3 border rounded-md bg-penafort-gray-50">Not set</div>
+                          <div className="flex">
+                            <div className="flex-1 p-3 border rounded-l-md bg-penafort-gray-50">
+                              {userPhone || 'Not verified'}
+                            </div>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button className="rounded-l-none">
+                                  <Phone className="mr-2 h-4 w-4" />
+                                  {userPhone ? 'Update' : 'Verify'}
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Phone Verification</DialogTitle>
+                                  <DialogDescription>
+                                    Verify your phone number for additional security
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <PhoneVerification />
+                              </DialogContent>
+                            </Dialog>
+                          </div>
                         </div>
                         
                         <Button className="mt-4">Edit Information</Button>
@@ -129,10 +161,7 @@ const Profile = () => {
                     </TabsContent>
                     
                     <TabsContent value="address" className="mt-6">
-                      <div className="border rounded-md p-6 flex flex-col items-center justify-center text-center">
-                        <p className="text-penafort-text-secondary mb-4">You haven't saved any addresses yet.</p>
-                        <Button>Add a New Address</Button>
-                      </div>
+                      <AddressList />
                     </TabsContent>
                     
                     <TabsContent value="preferences" className="mt-6">

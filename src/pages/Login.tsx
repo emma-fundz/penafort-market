@@ -6,7 +6,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Google } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Login = () => {
-  const { login, loading } = useUser();
+  const { login, loginWithGoogle, loading } = useUser();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,6 +44,11 @@ const Login = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
+    // Note: Redirect will be handled by Supabase OAuth flow
   };
 
   return (
@@ -82,6 +87,28 @@ const Login = () => {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="bg-white p-8 rounded-2xl shadow-lg"
             >
+              {/* Social login options */}
+              <div className="mb-6">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full h-12 flex items-center justify-center gap-2"
+                  onClick={handleGoogleLogin}
+                >
+                  <Google size={20} />
+                  <span>Continue with Google</span>
+                </Button>
+              </div>
+              
+              <div className="relative mb-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-penafort-text-secondary">Or</span>
+                </div>
+              </div>
+
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
