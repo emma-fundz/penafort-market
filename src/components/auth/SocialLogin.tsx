@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Google } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 
 const SocialLogin = () => {
@@ -20,7 +20,7 @@ const SocialLogin = () => {
         className="w-full h-12 flex items-center justify-center gap-2"
         onClick={handleGoogleLogin}
       >
-        <Google size={20} />
+        <LogIn size={20} />
         <span>Continue with Google</span>
       </Button>
     </div>
