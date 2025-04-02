@@ -1,8 +1,14 @@
 
 import React from 'react';
-import { ArrowUpDown } from 'lucide-react';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { Button } from '@/components/ui/button';
+import { 
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface ProductsSortProps {
   sortOption: string;
@@ -11,48 +17,24 @@ interface ProductsSortProps {
 
 const ProductsSort: React.FC<ProductsSortProps> = ({ sortOption, setSortOption }) => {
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
-          <ArrowUpDown size={16} />
-          <span>Sort</span>
-        </Button>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80">
-        <div className="space-y-4">
-          <h4 className="font-medium">Sort Options</h4>
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Sort products by different criteria</p>
-            <div className="grid gap-2">
-              <button 
-                className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'price-asc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
-                onClick={() => setSortOption('price-asc')}
-              >
-                Price: Low to High
-              </button>
-              <button 
-                className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'price-desc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
-                onClick={() => setSortOption('price-desc')}
-              >
-                Price: High to Low
-              </button>
-              <button 
-                className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'name-asc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
-                onClick={() => setSortOption('name-asc')}
-              >
-                Name: A to Z
-              </button>
-              <button 
-                className={`text-left p-2 hover:bg-penafort-green/5 rounded-md ${sortOption === 'name-desc' ? 'bg-penafort-green/10 text-penafort-green' : ''}`}
-                onClick={() => setSortOption('name-desc')}
-              >
-                Name: Z to A
-              </button>
-            </div>
-          </div>
-        </div>
-      </HoverCardContent>
-    </HoverCard>
+    <div className="w-full md:w-auto">
+      <Select value={sortOption} onValueChange={setSortOption}>
+        <SelectTrigger className="w-full md:w-[200px]">
+          <SelectValue placeholder="Sort By" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Sort By</SelectLabel>
+            <SelectItem value="default">Default</SelectItem>
+            <SelectItem value="price-asc">Price: Low to High</SelectItem>
+            <SelectItem value="price-desc">Price: High to Low</SelectItem>
+            <SelectItem value="name-asc">Name: A to Z</SelectItem>
+            <SelectItem value="name-desc">Name: Z to A</SelectItem>
+            <SelectItem value="rating-desc">Highest Rated</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 

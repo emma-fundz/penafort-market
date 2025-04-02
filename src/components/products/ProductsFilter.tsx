@@ -1,9 +1,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Filter } from 'lucide-react';
+import { Filter, Check } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface ProductsFilterProps {
   selectedCategory: string;
@@ -12,6 +15,8 @@ interface ProductsFilterProps {
   setPriceRange: (range: [number, number]) => void;
   handleCategoryClick: (category: string) => void;
   setCurrentPage: (page: number) => void;
+  availability: string;
+  setAvailability: (value: string) => void;
 }
 
 const ProductsFilter: React.FC<ProductsFilterProps> = ({
@@ -20,7 +25,9 @@ const ProductsFilter: React.FC<ProductsFilterProps> = ({
   priceRange,
   setPriceRange,
   handleCategoryClick,
-  setCurrentPage
+  setCurrentPage,
+  availability,
+  setAvailability
 }) => {
   return (
     <motion.div 
@@ -55,31 +62,59 @@ const ProductsFilter: React.FC<ProductsFilterProps> = ({
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-80">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h4 className="font-medium">Filter Options</h4>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Filter by price range</p>
-                <div className="grid gap-2">
-                  <label className="text-xs">Price Range</label>
-                  <div className="flex items-center gap-2">
-                    <input 
-                      type="number" 
-                      value={priceRange[0]} 
-                      onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
-                      className="input-field w-1/2 py-1 text-sm" 
-                      min="0"
-                    />
-                    <span>-</span>
-                    <input 
-                      type="number" 
-                      value={priceRange[1]} 
-                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 0])}
-                      className="input-field w-1/2 py-1 text-sm" 
-                      min="0"
-                    />
-                  </div>
+              
+              <div className="space-y-4">
+                <p className="text-sm font-medium">Price Range: ${priceRange[0]} - ${priceRange[1]}</p>
+                <Slider
+                  defaultValue={[priceRange[0], priceRange[1]]}
+                  min={0}
+                  max={1000}
+                  step={10}
+                  value={[priceRange[0], priceRange[1]]}
+                  onValueChange={(value) => setPriceRange([value[0], value[1]])}
+                  className="py-4"
+                />
+                <div className="flex items-center justify-between">
+                  <input 
+                    type="number" 
+                    value={priceRange[0]} 
+                    onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                    className="w-20 h-8 px-2 py-1 text-sm border rounded"
+                    min="0"
+                    max={priceRange[1]}
+                  />
+                  <span className="text-sm">to</span>
+                  <input 
+                    type="number" 
+                    value={priceRange[1]} 
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 0])}
+                    className="w-20 h-8 px-2 py-1 text-sm border rounded"
+                    min={priceRange[0]}
+                    max="1000"
+                  />
                 </div>
               </div>
+              
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Availability</p>
+                <RadioGroup value={availability} onValueChange={setAvailability}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="all" id="all" />
+                    <Label htmlFor="all">All Products</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="in-stock" id="in-stock" />
+                    <Label htmlFor="in-stock">In Stock Only</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="out-of-stock" id="out-of-stock" />
+                    <Label htmlFor="out-of-stock">Out of Stock</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
               <Button 
                 size="sm" 
                 className="w-full" 

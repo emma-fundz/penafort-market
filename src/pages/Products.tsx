@@ -13,6 +13,7 @@ import ProductStats from '../components/products/ProductStats';
 import ProductDetailDrawer from '../components/products/ProductDetailDrawer';
 import ProductPagination from '../components/products/ProductPagination';
 import LoadingIndicator from '../components/common/LoadingIndicator';
+import ProductSearchInput from '../components/products/ProductSearchInput';
 import { productCategories, initialProducts, generateProducts } from '../utils/productDataGenerator';
 
 const PRODUCTS_PER_PAGE = 12;
@@ -26,16 +27,20 @@ const Products = () => {
 
   // Get page from URL or default to 1
   const pageFromUrl = parseInt(searchParams.get('page') || '1');
+  // Get search term from URL if present
+  const searchTermFromUrl = searchParams.get('search') || '';
   
   // State management
   const [allProducts, setAllProducts] = useState<any[]>(initialProducts);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>(category || 'All');
   const [currentPage, setCurrentPage] = useState<number>(pageFromUrl);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortOption, setSortOption] = useState<string>('default');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>(searchTermFromUrl);
+  const [availability, setAvailability] = useState<string>('all'); // 'all', 'in-stock', 'out-of-stock'
 
   // Generate more products when needed (simulating API call)
   const loadMoreProducts = () => {
@@ -65,21 +70,43 @@ const Products = () => {
     }
   }, [category]);
 
-  // Update URL when page changes
+  // Update URL when page or search changes
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', currentPage.toString());
+    
+    if (searchTerm) {
+      newParams.set('search', searchTerm);
+    } else {
+      newParams.delete('search');
+    }
+    
     setSearchParams(newParams);
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
-  // Filter products based on selected category and price range
+  // Filter products based on selected category, price range, and search
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
+      // Category filter
       const categoryMatch = selectedCategory === 'All' || product.category === selectedCategory;
+      
+      // Price range filter
       const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
-      return categoryMatch && priceMatch;
+      
+      // Search filter (case insensitive)
+      const searchMatch = searchTerm === '' || 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
+        
+      // Availability filter
+      const availabilityMatch = availability === 'all' || 
+        (availability === 'in-stock' && product.stock > 0) ||
+        (availability === 'out-of-stock' && product.stock <= 0);
+      
+      return categoryMatch && priceMatch && searchMatch && availabilityMatch;
     });
-  }, [allProducts, selectedCategory, priceRange]);
+  }, [allProducts, selectedCategory, priceRange, searchTerm, availability]);
 
   // Sort products based on selected sort option
   const sortedProducts = useMemo(() => {
@@ -92,6 +119,8 @@ const Products = () => {
         return [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name));
       case 'name-desc':
         return [...filteredProducts].sort((a, b) => b.name.localeCompare(a.name));
+      case 'rating-desc':
+        return [...filteredProducts].sort((a, b) => b.rating - a.rating);
       default:
         return filteredProducts;
     }
@@ -139,6 +168,18 @@ const Products = () => {
     });
   };
 
+  // Handle search term change
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle availability filter change
+  const handleAvailabilityChange = (value: string) => {
+    setAvailability(value);
+    setCurrentPage(1); // Reset to first page when changing filter
+  };
+
   // Find related products (same category)
   const relatedProducts = useMemo(() => {
     if (!selectedProduct) return [];
@@ -158,6 +199,15 @@ const Products = () => {
 
           {/* Product Listing */}
           <div className="container mx-auto px-6 md:px-12 py-12">
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto mb-8">
+              <ProductSearchInput 
+                searchTerm={searchTerm}
+                setSearchTerm={handleSearchChange}
+                placeholder="Search for products by name, category, or description..."
+              />
+            </div>
+            
             {/* Filters and Sort */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <ProductsFilter 
@@ -167,6 +217,8 @@ const Products = () => {
                 setPriceRange={setPriceRange}
                 handleCategoryClick={handleCategoryClick}
                 setCurrentPage={setCurrentPage}
+                availability={availability}
+                setAvailability={handleAvailabilityChange}
               />
               <ProductsSort 
                 sortOption={sortOption}
@@ -186,18 +238,41 @@ const Products = () => {
             <LoadingIndicator isLoading={isLoading} />
 
             {/* Products Grid */}
-            <ProductsGrid 
-              products={paginatedProducts}
-              handleProductClick={handleProductClick}
-              handleAddToCart={handleAddToCart}
-            />
+            {sortedProducts.length > 0 ? (
+              <ProductsGrid 
+                products={paginatedProducts}
+                handleProductClick={handleProductClick}
+                handleAddToCart={handleAddToCart}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-medium mb-2">No products found</h3>
+                <p className="text-penafort-text-secondary mb-4">
+                  Try adjusting your filters or search criteria
+                </p>
+                <button 
+                  className="btn-primary"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setPriceRange([0, 1000]);
+                    setAvailability('all');
+                    setSelectedCategory('All');
+                    navigate('/products');
+                  }}
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            )}
 
             {/* Pagination */}
-            <ProductPagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {sortedProducts.length > 0 && (
+              <ProductPagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </main>
 
