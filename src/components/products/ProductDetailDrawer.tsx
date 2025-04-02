@@ -73,14 +73,14 @@ const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                 {product.discount ? (
                   <>
                     <span className="text-2xl font-bold text-penafort-green">
-                      ${(product.price * (1 - product.discount/100)).toFixed(2)}
+                      ₦{(product.price * (1 - product.discount/100)).toFixed(2)}
                     </span>
                     <p className="text-sm text-penafort-text-secondary line-through">
-                      ${product.price.toFixed(2)}
+                      ₦{product.price.toFixed(2)}
                     </p>
                   </>
                 ) : (
-                  <span className="text-2xl font-bold text-penafort-green">${product.price.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-penafort-green">₦{product.price.toFixed(2)}</span>
                 )}
               </div>
             </div>
@@ -128,7 +128,7 @@ const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                       />
                     </div>
                     <p className="text-xs truncate">{relatedProduct.name}</p>
-                    <p className="text-xs font-medium text-penafort-green">${relatedProduct.price.toFixed(2)}</p>
+                    <p className="text-xs font-medium text-penafort-green">₦{relatedProduct.price.toFixed(2)}</p>
                   </div>
                 ))}
               </div>

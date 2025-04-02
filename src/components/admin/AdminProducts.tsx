@@ -182,7 +182,7 @@ const AdminProducts = () => {
                       </div>
                     </TableCell>
                     <TableCell>{product.category}</TableCell>
-                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell>₦{product.price.toFixed(2)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span className={`w-3 h-3 rounded-full ${product.stock > 50 ? 'bg-green-500' : product.stock > 20 ? 'bg-yellow-500' : 'bg-red-500'}`}></span>
