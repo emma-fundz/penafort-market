@@ -16,6 +16,10 @@ import NotFound from "./pages/NotFound";
 import AuthRoute from "./components/auth/AuthRoute";
 import OAuthCallback from "./components/auth/OAuthCallback";
 import { UserProvider } from "./contexts/UserContext";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import SetupTwoFactor from "./pages/SetupTwoFactor";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -33,12 +37,27 @@ const AnimatedRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
+        
+        {/* Protected Routes */}
         <Route path="/profile" element={
           <AuthRoute>
             <Profile />
           </AuthRoute>
         } />
+        <Route path="/setup-2fa" element={
+          <AuthRoute>
+            <SetupTwoFactor />
+          </AuthRoute>
+        } />
+        <Route path="/admin" element={
+          <AuthRoute>
+            <Admin />
+          </AuthRoute>
+        } />
+        
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
