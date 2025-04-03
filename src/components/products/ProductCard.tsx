@@ -45,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, onAddToCart
             <h3 className="font-medium text-penafort-text-primary mb-1 line-clamp-1">{product.name}</h3>
             <p className="text-penafort-text-secondary text-sm">{product.category}</p>
           </div>
-          <p className="font-bold text-penafort-green">₦{product.price.toFixed(2)}</p>
+          <p className="font-bold text-penafort-green">${product.price.toFixed(2)}</p>
         </div>
         <motion.button 
           className="w-full flex items-center justify-center gap-2 btn-primary mt-3"

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ArrowRight, ShoppingCart, ShoppingBag, Eye } from 'lucide-react';
 import RatingStars from '../common/RatingStars';
 import { useCart } from '@/contexts/CartContext';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '../ui/button';
 import {
   Dialog,

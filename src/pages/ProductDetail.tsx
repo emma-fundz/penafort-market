@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -23,14 +24,18 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // Simulate fetching product data
   useEffect(() => {
     setIsLoading(true);
+    // Simulate API call delay
     setTimeout(() => {
+      // Generate sample products
       const products = generateProducts(50);
       const foundProduct = products.find(p => p.id.toString() === productId);
       
       if (foundProduct) {
         setProduct(foundProduct);
+        // Get related products (same category)
         const related = products
           .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
           .slice(0, 4);
@@ -65,6 +70,7 @@ const ProductDetail = () => {
   };
 
   const handleShareProduct = () => {
+    // In a real application, this would copy a link or open a share dialog
     navigator.clipboard.writeText(window.location.href);
     toast({
       title: "Link copied!",
@@ -74,6 +80,8 @@ const ProductDetail = () => {
   };
 
   const handleRelatedProductClick = (product: any) => {
+    // This would normally navigate to the product
+    // but we'll handle this in the ProductsGrid component
   };
 
   if (isLoading) {
@@ -111,6 +119,7 @@ const ProductDetail = () => {
         
         <main className="pt-24 pb-16">
           <div className="container mx-auto px-6 md:px-12">
+            {/* Breadcrumb */}
             <div className="mb-6">
               <Link to="/products" className="flex items-center text-penafort-text-secondary hover:text-penafort-green">
                 <ChevronLeft size={16} className="mr-1" />
@@ -118,7 +127,9 @@ const ProductDetail = () => {
               </Link>
             </div>
             
+            {/* Product Main Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+              {/* Product Images */}
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -132,6 +143,7 @@ const ProductDetail = () => {
                 />
               </motion.div>
               
+              {/* Product Details */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -167,12 +179,12 @@ const ProductDetail = () => {
                 
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-penafort-green mb-2">
-                    ₦{product.price.toFixed(2)}
+                    ${product.price.toFixed(2)}
                   </h2>
                   {product.discount && (
                     <p className="flex items-center gap-2">
                       <span className="line-through text-penafort-text-secondary">
-                        ₦{(product.price / (1 - product.discount / 100)).toFixed(2)}
+                        ${(product.price / (1 - product.discount / 100)).toFixed(2)}
                       </span>
                       <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                         {product.discount}% OFF
@@ -244,6 +256,7 @@ const ProductDetail = () => {
               </motion.div>
             </div>
             
+            {/* Product Tabs */}
             <div className="mb-16">
               <Tabs defaultValue="details">
                 <TabsList className="mb-8">
@@ -348,6 +361,7 @@ const ProductDetail = () => {
               </Tabs>
             </div>
             
+            {/* Related Products */}
             <div className="mb-16">
               <h2 className="text-2xl font-bold mb-8">You Might Also Like</h2>
               <ProductsGrid 

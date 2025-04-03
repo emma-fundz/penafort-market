@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from '@/components/ui/separator';
 
+// Mock orders data
 const mockOrders = [
   { id: 'ORD-38421', customer: 'John Doe', date: '2023-06-12T10:30:00Z', amount: 125.00, status: 'Completed', items: 4 },
   { id: 'ORD-38420', customer: 'Maria Garcia', date: '2023-06-11T15:45:00Z', amount: 86.25, status: 'Pending', items: 2 },
@@ -50,6 +52,7 @@ const mockOrders = [
   { id: 'ORD-38414', customer: 'Jennifer Smith', date: '2023-06-06T13:15:00Z', amount: 64.50, status: 'Delivered', items: 2 },
 ];
 
+// Order item details for the dialog
 const mockOrderItems = [
   { id: 1, name: 'Organic Bananas', price: 2.99, quantity: 2, total: 5.98, image: 'https://placehold.co/60x60' },
   { id: 2, name: 'Fresh Milk', price: 3.49, quantity: 1, total: 3.49, image: 'https://placehold.co/60x60' },
@@ -187,7 +190,7 @@ const AdminOrders = () => {
                     <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.customer}</TableCell>
                     <TableCell>{formatDate(order.date)}</TableCell>
-                    <TableCell>₦{order.amount.toFixed(2)}</TableCell>
+                    <TableCell>${order.amount.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell>{order.items}</TableCell>
                     <TableCell className="text-right">
@@ -226,6 +229,7 @@ const AdminOrders = () => {
         </CardContent>
       </Card>
       
+      {/* Order Details Dialog */}
       <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
         <DialogContent className="sm:max-w-[600px]">
           {selectedOrder && (
@@ -263,10 +267,10 @@ const AdminOrders = () => {
                       <div className="flex-1">
                         <p className="font-medium">{item.name}</p>
                         <p className="text-sm text-gray-500">
-                          ₦{item.price.toFixed(2)} × {item.quantity}
+                          ${item.price.toFixed(2)} × {item.quantity}
                         </p>
                       </div>
-                      <p className="font-medium">₦{item.total.toFixed(2)}</p>
+                      <p className="font-medium">${item.total.toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -276,15 +280,15 @@ const AdminOrders = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <p>Subtotal</p>
-                    <p>₦{(selectedOrder.amount - 5).toFixed(2)}</p>
+                    <p>${(selectedOrder.amount - 5).toFixed(2)}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Shipping</p>
-                    <p>₦5.00</p>
+                    <p>$5.00</p>
                   </div>
                   <div className="flex justify-between font-bold">
                     <p>Total</p>
-                    <p>₦{selectedOrder.amount.toFixed(2)}</p>
+                    <p>${selectedOrder.amount.toFixed(2)}</p>
                   </div>
                 </div>
                 

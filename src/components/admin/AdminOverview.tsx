@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -17,6 +18,7 @@ import {
 } from 'recharts';
 import { ArrowUpRight, DollarSign, Users, ShoppingCart, Package } from 'lucide-react';
 
+// Mock data
 const salesData = [
   { name: 'Jan', sales: 4000 },
   { name: 'Feb', sales: 3000 },
@@ -63,7 +65,7 @@ const AdminOverview = () => {
             </div>
             <div className="mt-4">
               <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-              <h2 className="text-3xl font-bold">₦12,426</h2>
+              <h2 className="text-3xl font-bold">$12,426</h2>
               <p className="text-sm text-green-500 mt-1">+16% from last month</p>
             </div>
           </CardContent>
@@ -221,28 +223,28 @@ const AdminOverview = () => {
                     <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">#ORD-38421</th>
                     <td className="px-6 py-4">John Doe</td>
                     <td className="px-6 py-4">Jun 12, 2023</td>
-                    <td className="px-6 py-4">₦125.00</td>
+                    <td className="px-6 py-4">$125.00</td>
                     <td className="px-6 py-4"><span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span></td>
                   </tr>
                   <tr className="bg-white border-b">
                     <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">#ORD-38420</th>
                     <td className="px-6 py-4">Maria Garcia</td>
                     <td className="px-6 py-4">Jun 11, 2023</td>
-                    <td className="px-6 py-4">₦86.25</td>
+                    <td className="px-6 py-4">$86.25</td>
                     <td className="px-6 py-4"><span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Pending</span></td>
                   </tr>
                   <tr className="bg-white border-b">
                     <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">#ORD-38419</th>
                     <td className="px-6 py-4">Robert Johnson</td>
                     <td className="px-6 py-4">Jun 10, 2023</td>
-                    <td className="px-6 py-4">₦237.50</td>
+                    <td className="px-6 py-4">$237.50</td>
                     <td className="px-6 py-4"><span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span></td>
                   </tr>
                   <tr className="bg-white">
                     <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">#ORD-38418</th>
                     <td className="px-6 py-4">Lisa Wang</td>
                     <td className="px-6 py-4">Jun 10, 2023</td>
-                    <td className="px-6 py-4">₦49.99</td>
+                    <td className="px-6 py-4">$49.99</td>
                     <td className="px-6 py-4"><span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Cancelled</span></td>
                   </tr>
                 </tbody>
