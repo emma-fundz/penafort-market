@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './ProductsGrid.css';
 
 // Animation variants
 const containerVariants = {
@@ -22,9 +23,9 @@ const ProductsGrid = ({
 }) => {
   if (products.length === 0) {
     return (
-      <div className="text-center py-5">
-        <h3 className="fs-4 fw-medium mb-2">No products found</h3>
-        <p className="text-muted">
+      <div className="products-grid-container">
+        <h3 className="no-products-message">No products found</h3>
+        <p className="no-products-description">
           Try adjusting your filters or search criteria
         </p>
       </div>
@@ -33,7 +34,7 @@ const ProductsGrid = ({
 
   return (
     <motion.div 
-      className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
+      className="products-row"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
