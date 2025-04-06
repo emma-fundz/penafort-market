@@ -4,12 +4,6 @@ import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface ProductsGridProps {
-  products: any[];
-  handleProductClick: (product: any) => void;
-  handleAddToCart: (product: any, e: React.MouseEvent) => void;
-}
-
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -21,7 +15,7 @@ const containerVariants = {
   }
 };
 
-const ProductsGrid: React.FC<ProductsGridProps> = ({ 
+const ProductsGrid = ({ 
   products, 
   handleProductClick, 
   handleAddToCart 

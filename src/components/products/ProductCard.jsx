@@ -5,22 +5,7 @@ import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface ProductCardProps {
-  product: {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    image: string;
-    description: string;
-    rating: number;
-    discount: number | null;
-  };
-  onClick: () => void;
-  onAddToCart: (e: React.MouseEvent) => void;
-}
-
-const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, onAddToCart }) => {
+const ProductCard = ({ product, onClick, onAddToCart }) => {
   return (
     <Link to={`/products/detail/${product.id}`} className="text-decoration-none">
       <motion.div 
