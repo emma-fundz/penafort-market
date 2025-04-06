@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, ShoppingBag } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface ProductDetailDrawerProps {
   product: any;
@@ -40,74 +41,79 @@ const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
   if (!isOpen || !product) return null;
   
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-end md:items-center">
+    <div className="position-fixed top-0 start-0 end-0 bottom-0 bg-dark bg-opacity-50" style={{ zIndex: 1050 }}>
       <motion.div 
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="bg-white w-full max-w-2xl rounded-t-2xl md:rounded-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-white position-absolute start-50 bottom-0 translate-middle-x w-100"
+        style={{ maxWidth: '42rem', borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem', maxHeight: '90vh', overflowY: 'auto' }}
       >
-        <div className="relative">
+        <div className="position-relative">
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-colors z-10"
+            className="btn btn-light position-absolute end-0 top-0 m-3 rounded-circle"
+            style={{ zIndex: 10 }}
           >
             <X size={20} />
           </button>
           
-          <div className="h-64 md:h-80 overflow-hidden">
+          <div style={{ height: '20rem', overflow: 'hidden' }}>
             <img 
               src={product.image} 
               alt={product.name} 
-              className="w-full h-full object-cover"
+              className="w-100 h-100"
+              style={{ objectFit: 'cover' }}
             />
           </div>
           
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-4">
+          <div className="p-4">
+            <div className="d-flex justify-content-between align-items-start mb-4">
               <div>
-                <h2 className="text-2xl font-bold text-penafort-text-primary">{product.name}</h2>
-                <p className="text-penafort-text-secondary text-sm">{product.category}</p>
+                <h2 className="fs-3 fw-bold">{product.name}</h2>
+                <p className="text-muted small">{product.category}</p>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 {product.discount ? (
                   <>
-                    <span className="text-2xl font-bold text-penafort-green">
+                    <span className="fs-3 fw-bold text-success">
                       ₦{(product.price * (1 - product.discount/100)).toLocaleString()}
                     </span>
-                    <p className="text-sm text-penafort-text-secondary line-through">
+                    <p className="small text-muted text-decoration-line-through">
                       ₦{product.price.toLocaleString()}
                     </p>
                   </>
                 ) : (
-                  <span className="text-2xl font-bold text-penafort-green">₦{product.price.toLocaleString()}</span>
+                  <span className="fs-3 fw-bold text-success">₦{product.price.toLocaleString()}</span>
                 )}
               </div>
             </div>
             
-            <p className="text-penafort-text-secondary mb-6">{product.description}</p>
+            <p className="text-muted mb-4">{product.description}</p>
             
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center">
+            <div className="d-flex flex-wrap gap-3 mb-4">
+              <div className="d-flex align-items-center">
                 <button 
-                  className="w-10 h-10 rounded-l-lg border border-penafort-gray-200 flex items-center justify-center hover:bg-penafort-gray-100"
+                  className="btn btn-outline-secondary"
                   onClick={decreaseQuantity}
+                  style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                 >
                   -
                 </button>
-                <span className="w-12 h-10 flex items-center justify-center border-t border-b border-penafort-gray-200">
+                <span className="px-3 py-2 border-top border-bottom">
                   {quantity}
                 </span>
                 <button 
-                  className="w-10 h-10 rounded-r-lg border border-penafort-gray-200 flex items-center justify-center hover:bg-penafort-gray-100"
+                  className="btn btn-outline-secondary"
                   onClick={increaseQuantity}
+                  style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                 >
                   +
                 </button>
               </div>
               
               <button 
-                className="flex-1 btn-primary flex items-center justify-center gap-2"
+                className="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2"
                 onClick={handleAddToCart}
               >
                 <ShoppingBag size={18} />
@@ -115,20 +121,21 @@ const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
               </button>
             </div>
             
-            <div className="border-t border-penafort-gray-200 pt-6">
-              <h3 className="font-medium mb-4">You might also like</h3>
-              <div className="grid grid-cols-3 gap-4">
+            <div className="border-top pt-4">
+              <h3 className="fw-medium mb-3">You might also like</h3>
+              <div className="row row-cols-3 g-3">
                 {relatedProducts.slice(0, 3).map(relatedProduct => (
-                  <div key={relatedProduct.id} className="text-center">
-                    <div className="aspect-square rounded-lg overflow-hidden mb-2">
+                  <div key={relatedProduct.id} className="col text-center">
+                    <div className="mb-2" style={{ aspectRatio: '1', overflow: 'hidden', borderRadius: '0.5rem' }}>
                       <img 
                         src={relatedProduct.image} 
                         alt={relatedProduct.name}
-                        className="w-full h-full object-cover"
+                        className="w-100 h-100"
+                        style={{ objectFit: 'cover' }}
                       />
                     </div>
-                    <p className="text-xs truncate">{relatedProduct.name}</p>
-                    <p className="text-xs font-medium text-penafort-green">₦{relatedProduct.price.toLocaleString()}</p>
+                    <p className="small text-truncate">{relatedProduct.name}</p>
+                    <p className="small fw-medium text-success">₦{relatedProduct.price.toLocaleString()}</p>
                   </div>
                 ))}
               </div>

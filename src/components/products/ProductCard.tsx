@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface ProductCardProps {
   product: {
@@ -21,40 +22,44 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, onAddToCart }) => {
   return (
-    <Link to={`/products/detail/${product.id}`}>
+    <Link to={`/products/detail/${product.id}`} className="text-decoration-none">
       <motion.div 
-        className="product-card group cursor-pointer"
+        className="card h-100 product-card"
         whileHover={{ y: -5 }}
         onClick={onClick}
+        style={{ cursor: 'pointer' }}
       >
-        <div className="mb-4 aspect-square rounded-lg overflow-hidden bg-penafort-gray-100 relative">
+        <div className="position-relative">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy" // Important for performance with many products
+            className="card-img-top"
+            style={{ height: '250px', objectFit: 'cover', transition: 'transform 0.3s ease' }}
+            loading="lazy"
           />
           {product.discount && (
-            <span className="absolute top-2 right-2 z-10 px-2 py-1 bg-red-500 text-white text-xs font-medium rounded-full">
+            <span className="position-absolute top-0 end-0 badge bg-danger m-2">
               {product.discount}% OFF
             </span>
           )}
         </div>
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <h3 className="font-medium text-penafort-text-primary mb-1 line-clamp-1">{product.name}</h3>
-            <p className="text-penafort-text-secondary text-sm">{product.category}</p>
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h5 className="card-title text-truncate mb-1">{product.name}</h5>
+              <p className="card-text text-muted small">{product.category}</p>
+            </div>
+            <p className="fw-bold text-success">₦{product.price.toLocaleString()}</p>
           </div>
-          <p className="font-bold text-penafort-green">₦{product.price.toLocaleString()}</p>
+          <motion.button 
+            className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 mt-3"
+            whileTap={{ scale: 0.95 }}
+            onClick={onAddToCart}
+          >
+            <ShoppingBag size={18} />
+            <span>Add to Cart</span>
+          </motion.button>
         </div>
-        <motion.button 
-          className="w-full flex items-center justify-center gap-2 btn-primary mt-3"
-          whileTap={{ scale: 0.95 }}
-          onClick={onAddToCart}
-        >
-          <ShoppingBag size={18} />
-          <span>Add to Cart</span>
-        </motion.button>
       </motion.div>
     </Link>
   );

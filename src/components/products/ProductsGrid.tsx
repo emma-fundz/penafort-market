@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface ProductsGridProps {
   products: any[];
@@ -27,9 +28,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 }) => {
   if (products.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-xl font-medium mb-2">No products found</h3>
-        <p className="text-penafort-text-secondary">
+      <div className="text-center py-5">
+        <h3 className="fs-4 fw-medium mb-2">No products found</h3>
+        <p className="text-muted">
           Try adjusting your filters or search criteria
         </p>
       </div>
@@ -38,18 +39,19 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 
   return (
     <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+      className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {products.map((product) => (
-        <ProductCard 
-          key={product.id}
-          product={product}
-          onClick={() => handleProductClick(product)}
-          onAddToCart={(e) => handleAddToCart(product, e)}
-        />
+        <div className="col" key={product.id}>
+          <ProductCard 
+            product={product}
+            onClick={() => handleProductClick(product)}
+            onAddToCart={(e) => handleAddToCart(product, e)}
+          />
+        </div>
       ))}
     </motion.div>
   );
