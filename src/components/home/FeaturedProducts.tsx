@@ -18,7 +18,7 @@ const FeaturedProducts = () => {
   // In a real app, you would implement a real countdown timer here
 
   return (
-    <section id="products" className="py-20 px-6 md:px-12 bg-penafort-gray-50">
+    <section id="products" className="py-10 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 bg-penafort-gray-50">
       <div className="container mx-auto">
         {/* Categories */}
         <CategoryGrid categories={categories} />

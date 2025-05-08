@@ -18,7 +18,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.3
+      staggerChildren: 0.2,
+      when: "beforeChildren"
     }
   }
 };
@@ -41,13 +42,14 @@ const Index = () => {
   
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white w-full overflow-x-hidden">
         <Navbar />
         
         <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
+          className="w-full overflow-hidden"
         >
           <motion.div variants={itemVariants}>
             <Hero />
@@ -58,7 +60,7 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
           >
             <FeaturedProducts />
           </motion.div>
@@ -68,7 +70,7 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.1 }}
           >
             <About />
           </motion.div>
@@ -78,7 +80,7 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.1 }}
           >
             <Location />
           </motion.div>
@@ -88,7 +90,7 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.1 }}
           >
             <Newsletter />
           </motion.div>

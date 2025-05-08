@@ -2,8 +2,10 @@
 /* ProductsGrid Styles */
 .products-grid-container {
   text-align: center;
-  padding-top: 1.25rem;
+  padding-top: 1rem;
   padding-bottom: 1.25rem;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .no-products-message {
@@ -19,12 +21,22 @@
 .products-row {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 1.5rem;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Responsive grid adjustments */
+@media (min-width: 480px) {
+  .products-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
 }
 
 @media (min-width: 768px) {
   .products-row {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
